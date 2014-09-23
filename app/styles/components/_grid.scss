@@ -1,0 +1,16 @@
+.container {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  @include center;
+  width: $max-width;
+}
+
+.row {
+  @include center;
+}
+
+.col-8 { @include col(8/12); }
+.col-7 { @include col(7/12); }
+.col-6 { @include col(6/12); }
+.col-5 { @include col(5/12); }
+.col-4 { @include col(4/12); }
