@@ -1,7 +1,9 @@
 <div class="container padding-tb">
-  <div class="row">
-    <div class="col-6 padding-top padding-bottom">
-      {{ weather.currently.apparentTemperature }}&deg;
-    </div>
+  <map id="map" class="map"></map> 
+      
+  <div class="wxInfo">
+    <skycon icon="weather.current.icon" size="weather.current.iconSize"></skycon>
+    <h4>{{ weather.current.summary }}</h4>
+    <p>{{ weather.current.temperature }}&deg;</p>
   </div>
 </div>

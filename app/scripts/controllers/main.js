@@ -9,38 +9,63 @@
  */
 angular.module('wxApp')
   .controller('MainCtrl', function ($scope, $http, $resource) {
+
     $scope.weather = [];
-    var latlng = '40.1295004,-82.9780043';
+    $scope.cam;
+    $scope.lat;
+    $scope.lng;
 
-    var resource = $resource('https://api.forecast.io/forecast/cea2fb224c29df11b868065c2330c61c/' + latlng, {
-        callback: 'JSON_CALLBACK'
-      },
-      {
-        getWeather: {
-          method: 'JSONP'
-        }
-      });
+    // KEYS
+    var forecastKey = 'cea2fb224c29df11b868065c2330c61c';
 
-    loadRemoteData();
+    $scope.wxLoading = true;
 
-    function loadRemoteData(){     
-      $scope.isLoading = true;
-      resource.getWeather().$promise.then(
-        function(weather) {
-          $scope.isLoading = false;
-          $scope.weather = weather;
+    if(navigator.geolocation){
+      navigator.geolocation.getCurrentPosition(success, error);
+    }
+    else {
+      $scope.error = "Geolocation is not supported by this browser.";
+    }
+
+    function success(pos){
+      $scope.lat = pos.coords.latitude;
+      $scope.lng = pos.coords.longitude;
+
+      var forecastResource = $resource('https://api.forecast.io/forecast/' + forecastKey + '/' + $scope.lat + ','+ $scope.lng, {
+          callback: 'JSON_CALLBACK'
         },
-        function(error){
-          $scope.error = error;
+        {
+          getWeather: {
+            method: 'JSONP'
+          }
         });
+
+      function loadRemoteData(){     
+        $scope.isLoading = true;
+        forecastResource.getWeather()
+          .$promise.then(function(weather){
+            $scope.wxLoading = false;
+            $scope.weather = {
+              current: {
+                icon: weather.currently.icon,
+                iconSize: 64,
+                storm: weather.current.nearestStormDistance,
+                summary: weather.currently.summary,
+                temperature: weather.currently.temperature
+              }
+            }
+          },
+            function(error){
+              $scope.error = error;
+            });
+        };
+
+      loadRemoteData();
+
+    };
+
+    function error(){
+      console.log("Couldn't find your location.")
     }
 
 });
-  //   $http.jsonp('' + latlng + '&callback=')
-  //   .success(function(weather){
-  //     $scope.weather = weather;
-  //   })
-  //   .then(function(){
-  //     console.log($scope.weather)
-  //   })
-  // });
